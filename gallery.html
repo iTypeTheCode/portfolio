@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="homestyle.css">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" 
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    
+    <title>Gallery</title>
+</head>
+<body>
+    <main>
+
+        <nav>
+            <div class="left">
+                <a href="index.html">Zac Petty</a>
+            </div>
+            
+            <div class="right">
+            <!-- NOT USING AT THE MOMENT
+            <a href="http://linkedin.com" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-linkedin"></i>
+                <span>Linkedin</span>
+            </a>
+            <a href="https://vsco.co/zacpetty/gallery" target="_blank" rel="noopener no-referrer">
+                <i class="fa-solid fa-camera"></i>
+                <span>vsco</span>            
+            </a>
+            -->
+            <a href="projects.html">
+                <i class="fa-solid fa-folder"></i>
+                <span>Projects</span>            
+            </a>
+            <a href="gallery.html">
+              <i class="fa-solid fa-camera"></i>
+              <span>Graphic Design</span>  
+            </a>
+            </div>
+        </nav>
+
+
+
+
+        <div id="background">
+            <!--
+            <section id="slideshow" class="slideshow-section">
+            <h2>Gallery</h2>
+            <div class="banner">
+                <div class="slider" style="--quantity: 8">
+                    <div class="item" style="--position: 1"><img src="Images/Gallery/baseballcard-poster-small.webp" alt=""></div>
+                    <div class="item" style="--position: 2"><img src="Images/Gallery/greatpumpkin-poster-small.webp" alt=""></div>
+                    <div class="item" style="--position: 3"><img src="Images/Gallery/halloweekend-poster-small.webp" alt=""></div>
+                    <div class="item" style="--position: 4"><img src="Images/Gallery/joey-poster-small.webp" alt=""></div>
+                    <div class="item" style="--position: 5"><img src="Images/Gallery/victor-poster-small.webp" alt=""></div>
+                    <div class="item" style="--position: 6"><img src="Images/Gallery/whitmans-poster-small.webp" alt=""></div>
+                    <div class="item" style="--position: 7"><img src="Images/Gallery/yamaha-poster-small.webp" alt=""></div>
+                    <div class="item" style="--position: 8"><img src="Images/Gallery/laila-vinyl-small.webp" alt=""></div>
+                </div>
+            </div>
+        </section>
+        --->
+        <section id="slideshow" class="slideshow-section">
+        <h2>Gallery</h2>
+        </section>
+        <div id="gallery" class="gallery-section">
+            <img src="Images/Gallery/baseballcard-poster-small.webp" alt="Gallery Image" />
+            <img src="Images/Gallery/pool-regular-small.webp" alt="Gallery Image">
+            <img src="Images/Gallery/greatpumpkin-poster-small.webp" alt="Gallery Image" />
+            <img src="Images/Gallery/halloweekend-poster-small.webp" alt="Gallery Image" />
+            <img src="Images/Gallery/joey-poster-small.webp" alt="Gallery Image" />
+            <img src="Images/Gallery/laila-vinyl-small.webp" alt="Gallery Image" />
+            <img src="Images/Gallery/victor-poster-small.webp" alt="Gallery Image" />
+            <img src="Images/Gallery/laila-pool-small.webp" alt="Gallery Image">
+            <img src="Images/Gallery/whitmans-poster-small.webp" alt="Gallery Image">
+            <img src="Images/Gallery/yamaha-poster-small.webp" alt="Gallery Image">
+        </div>
+
+        <div class="lightbox" id="lightbox">
+            <img src="" alt="Expanded Image" id="lightbox-img" />
+        </div>
+
+        <script>
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const galleryImgs = document.querySelectorAll('.gallery-section img');
+            
+            galleryImgs.forEach(img => {
+                img.addEventListener('click', () => {
+                    lightbox.classList.add('active');
+                    lightboxImg.src = img.src;
+                })
+            })
+
+            lightbox.addEventListener('click', (e) =>{
+                if(e.target !== lightboxImg){
+                    lightbox.classList.remove('active');
+                    lightboxImg.src = '';
+                }
+            })
+        </script>
+
+        <section id="contact" class="contact-section">
+            <h2>Contact</h2>
+            <div class="group">
+                <div class="text">
+                    Quality and urgency is what I strive for, have an idea you need help to create? Let's
+                    do it! From large projects to small, an oppourtunity for a job or to learn don't hesistate
+                    to contact me here.
+                </div>
+                <form>
+                    <label for="name">Name</label>
+                    <input type="text" id="name">
+
+                    <label for="name">Email</label>
+                    <input type="email" id="email">
+                    
+                    <label for="message">Message</label>
+                    <textarea id="message" cols="30" rows="10"></textarea>
+
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </section>
+
+
+        <div class="footer">
+            <p>Developed by Zac Petty</p> 
+        </div>
+
+
+        </div>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="reactivepage.js"></script>
+
+
+</body>
+</html>
