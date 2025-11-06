@@ -399,6 +399,12 @@ nav .right a span{
     margin: 0 auto;
 }
 
+.project-page h3{
+    text-align: center;
+    margin-bottom: 25px;
+    
+}
+
 .project-page .timeline::after{
     content: '';
     position: absolute;
@@ -408,12 +414,6 @@ nav .right a span{
     bottom: 0;
     left: 50%;
     margin-left: -3px;
-}
-
-.project-page h3{
-    text-align: center;
-    margin-bottom: 25px;
-    
 }
 
 .project-page .container{
@@ -783,4 +783,5 @@ nav .right a span{
     
 
 }
+
 
