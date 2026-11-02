@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Gallery</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #dcecf5;
+            --ink: #2b2f33;
+            --paper: #ffffff;
+            --butter: #ffcf5c;
+            --shadow: 0 6px 16px rgba(43, 47, 51, .14);
+        }
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Fredoka', system-ui, sans-serif;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        .page {
+            width: min(100%, 440px);
+            margin: 0 auto;
+            padding: 28px 18px 48px;
+        }
+
+        header { text-align: center; margin-bottom: 18px; }
+        h1 { margin: 0; font-size: 30px; font-weight: 600; letter-spacing: .01em; }
+        .hint { margin: 6px 0 0; font-size: 15px; opacity: .72; }
+
+        /* ---------- camera ---------- */
+        .stage {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1.8;            /* replaced by JS once the image loads */
+            filter: drop-shadow(0 10px 14px rgba(43, 47, 51, .18));
+        }
+        .wrap {
+            position: absolute;
+            left: 50%; top: 50%;
+            overflow: hidden;
+            transform: translate(-50%, -50%) rotate(var(--rot, -90deg));
+        }
+        /* full camera image; the wrap above crops away its empty margins */
+        .full { position: absolute; }
+        .full > img.camera { display: block; width: 100%; height: auto; }
+
+        .screen {
+            position: absolute;
+            container-type: size;
+            overflow: hidden;
+            background: #050607;
+            border-radius: 1%;
+            cursor: pointer;
+            touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .screen:focus-visible { outline: 3px solid var(--butter); outline-offset: 2px; }
+        .screen-content { position: absolute; left: 50%; top: 50%; }
+        .screen-content img.photo {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: contain;
+            transition: opacity .2s ease;
+        }
+        .screen-content img.photo.is-loading { opacity: 0; }
+
+        .hud {
+            position: absolute; left: 0; right: 0; bottom: 0;
+            display: flex; justify-content: space-between; gap: 3cqmin;
+            padding: 3cqmin 4cqmin;
+            font-size: clamp(8px, 4.4cqmin, 16px);
+            color: #fff;
+            background: linear-gradient(to top, rgba(0,0,0,.7), rgba(0,0,0,0));
+            pointer-events: none;
+        }
+        .hud[hidden] { display: none; }
+        .hud .title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .screen::after {
+            content: ""; position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(115deg, rgba(255,255,255,.08), rgba(255,255,255,0) 35%);
+        }
+
+        /* real camera buttons, drawn on the diagram */
+        .hot {
+            position: absolute;
+            width: 6.5%;
+            aspect-ratio: 1;
+            transform: translate(-50%, -50%);
+            padding: 0; border: 0; border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hot::after {
+            content: ""; position: absolute; inset: 17%;
+            border-radius: 50%;
+            background: var(--butter);
+            opacity: 0;
+            transition: opacity .12s ease;
+        }
+        .hot:active::after, .hot[aria-pressed="true"]::after { opacity: .55; }
+        .hot:focus-visible { outline: 3px solid var(--butter); }
+
+        /* ---------- controls ---------- */
+        .controls {
+            display: flex; align-items: center; justify-content: center;
+            gap: 14px; margin: 14px 0 26px;
+        }
+        .pill {
+            width: 56px; height: 48px;
+            display: grid; place-items: center;
+            border: 0; border-radius: 999px;
+            background: var(--paper); color: var(--ink);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform .1s ease, background .1s ease;
+        }
+        .pill:active { transform: scale(.94); background: var(--butter); }
+        .pill:focus-visible, .thumb:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+        .pill svg { width: 22px; height: 22px; }
+        .counter { min-width: 72px; text-align: center; font-size: 17px; font-weight: 500; }
+        .controls.single { display: none; }
+
+        /* ---------- all photos ---------- */
+        h2 { margin: 0 0 12px; font-size: 20px; font-weight: 600; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .thumb {
+            padding: 0; border: 0;
+            aspect-ratio: 9 / 16;
+            border-radius: 14px;
+            overflow: hidden;
+            background: var(--paper);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .thumb[aria-current="true"] { outline: 3px solid var(--butter); outline-offset: 2px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+<main class="page">
+
+    <header>
+        <h1 id="pageTitle">My photos</h1>
+        <p class="hint">Swipe the screen, or press the camera’s buttons.</p>
+    </header>
+
+    <div class="stage" id="stage">
+        <div class="wrap" id="wrap">
+            <div class="full" id="full">
+                <img class="camera" id="camera" alt="Back of a camera">
+
+                <div class="screen" id="screen" tabindex="0" role="group" aria-label="Camera screen showing a photo. Swipe or use the arrow keys to change photos.">
+                    <div class="screen-content" id="content">
+                        <img class="photo" id="photo" alt="">
+                        <div class="hud" id="hud" aria-hidden="true">
+                            <span class="title" id="hudTitle"></span>
+                            <span id="hudCount"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- positions are a % of the camera image -->
+                <button class="hot" id="hotPrev" style="left:49.9%; top:26.5%" aria-label="Previous photo"></button>
+                <button class="hot" id="hotNext" style="left:63.6%; top:26.5%" aria-label="Next photo"></button>
+                <button class="hot" id="hotPlay" style="left:71.8%; top:67.1%" aria-label="Play slideshow" aria-pressed="false"></button>
+                <button class="hot" id="hotInfo" style="left:71.8%; top:77.9%" aria-label="Show or hide photo info"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls" id="controls">
+        <button class="pill" id="prev" aria-label="Previous photo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <span class="counter" id="counter" aria-live="polite"></span>
+        <button class="pill" id="next" aria-label="Next photo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+    </div>
+
+    <section aria-labelledby="allHeading">
+        <h2 id="allHeading">All photos</h2>
+        <div class="grid" id="grid"></div>
+    </section>
+
+</main>
+
+<script>
+/* ===========================================================
+   EDIT HERE
+   =========================================================== */
+const CONFIG = {
+    title: 'My photos',
+    cameraSrc: 'Images/Minimalist Charcoal Camera Back Diagram Transparent.webp',
+    slideshowSeconds: 3,
+
+    // Where the display sits on the camera image, as a fraction of the image.
+    screen: { left: 0.111, top: 0.350, width: 0.537, height: 0.482 },
+
+    // The part of the camera image to show (crops the empty margins).
+    crop: { x: 0.026, y: 0.122, w: 0.95, h: 0.77 }
+};
+
+// Add one line per photo. Thumbnails reuse the same file.
+const PHOTOS = [
+    { src: 'Images/Gallery/baseballcard-poster-small.webp', title: 'Ben Norris', alt: 'A baseball card photo of a pitcher mid-throw' },
+    { src: 'Images/Gallery/greatpumpkin-poster-small.webp', title: 'Great Pumpkin', alt: 'A poster of a pumpkin with a spooky face' },
+    { src: 'Images/Gallery/halloweekend-poster-small.webp', title: 'Halloween Weekend', alt: 'A poster of a haunted house with bats flying around' },
+    { src: 'Images/Gallery/joey-poster-small.webp', title: 'Joey', alt: 'A poster of a person named Joey with a cool design' },
+    { src: 'Images/Gallery/victor-poster-small.webp', title: 'Victor', alt: 'A poster of a person named Victor with a stylish look' },
+    { src: 'Images/Gallery/whitmans-poster-small.webp', title: 'Whitmans', alt: 'A poster of a group called Whitmans with an artistic vibe' }
+];
+/* =========================================================== */
+
+const $ = id => document.getElementById(id);
+const stage = $('stage'), wrap = $('wrap'), full = $('full'), cam = $('camera');
+const screenEl = $('screen'), content = $('content'), photo = $('photo'), hud = $('hud');
+let index = 0, timer = null;
+
+/* ---------- layout ----------
+   The camera is turned a quarter so its screen is tall, which fits portrait photos. */
+function layout() {
+    if (!cam.naturalWidth) return;
+    const c = CONFIG.crop, W = cam.naturalWidth, H = cam.naturalHeight;
+    const s = stage.clientWidth / (c.h * H);          // pixels per image pixel
+    const wrapW = c.w * W * s, wrapH = c.h * H * s;
+    wrap.style.width = wrapW + 'px';
+    wrap.style.height = wrapH + 'px';
+    full.style.width = W * s + 'px';
+    full.style.left = -c.x * W * s + 'px';
+    full.style.top = -c.y * H * s + 'px';
+    stage.style.aspectRatio = 'auto';
+    stage.style.height = wrapW + 'px';
+}
+
+function placeScreen() {
+    const s = CONFIG.screen;
+    Object.assign(screenEl.style, {
+        left: s.left * 100 + '%', top: s.top * 100 + '%',
+        width: s.width * 100 + '%', height: s.height * 100 + '%'
+    });
+    // Turn the photo back upright for the viewer.
+    content.style.width = '100cqh';
+    content.style.height = '100cqw';
+    content.style.transform = 'translate(-50%, -50%) rotate(90deg)';
+}
+
+/* ---------- gallery ---------- */
+function show(i) {
+    index = (i + PHOTOS.length) % PHOTOS.length;
+    const p = PHOTOS[index];
+    photo.classList.add('is-loading');
+    photo.onload = photo.onerror = () => photo.classList.remove('is-loading');
+    photo.src = p.src;
+    photo.alt = p.alt || p.title || '';
+    $('hudTitle').textContent = p.title || '';
+    $('hudCount').textContent = `${index + 1}/${PHOTOS.length}`;
+    $('counter').textContent = `${index + 1} / ${PHOTOS.length}`;
+    document.querySelectorAll('.thumb').forEach((t, n) => t.setAttribute('aria-current', n === index));
+    const next = PHOTOS[(index + 1) % PHOTOS.length];
+    if (next) new Image().src = next.src;           // preload
+}
+const go = d => show(index + d);
+
+function buildGrid() {
+    PHOTOS.forEach((p, n) => {
+        const b = document.createElement('button');
+        b.className = 'thumb';
+        b.setAttribute('aria-label', `Show ${p.title || 'photo ' + (n + 1)} on the camera`);
+        const im = document.createElement('img');
+        im.src = p.src; im.alt = ''; im.loading = 'lazy';
+        b.appendChild(im);
+        b.addEventListener('click', () => {
+            show(n);
+            const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            stage.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' });
+        });
+        $('grid').appendChild(b);
+    });
+}
+
+/* ---------- slideshow ---------- */
+function setPlaying(on) {
+    clearInterval(timer);
+    timer = on ? setInterval(() => go(1), CONFIG.slideshowSeconds * 1000) : null;
+    $('hotPlay').setAttribute('aria-pressed', on);
+    $('hotPlay').setAttribute('aria-label', on ? 'Pause slideshow' : 'Play slideshow');
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden && timer) setPlaying(false); });
+
+/* ---------- input ---------- */
+const manual = fn => () => { setPlaying(false); fn(); };
+$('prev').addEventListener('click', manual(() => go(-1)));
+$('next').addEventListener('click', manual(() => go(1)));
+$('hotPrev').addEventListener('click', manual(() => go(-1)));
+$('hotNext').addEventListener('click', manual(() => go(1)));
+$('hotPlay').addEventListener('click', () => setPlaying(!timer));
+$('hotInfo').addEventListener('click', () => { hud.hidden = !hud.hidden; });
+
+let startX = 0, swiped = false;
+screenEl.addEventListener('pointerdown', e => { startX = e.clientX; swiped = false; });
+screenEl.addEventListener('pointerup', e => {
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 40) { swiped = true; setPlaying(false); go(dx < 0 ? 1 : -1); }
+});
+screenEl.addEventListener('click', () => { if (!swiped) { setPlaying(false); go(1); } });
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { setPlaying(false); go(1); }
+    if (e.key === 'ArrowLeft') { setPlaying(false); go(-1); }
+});
+
+/* ---------- start ---------- */
+document.title = CONFIG.title;
+$('pageTitle').textContent = CONFIG.title;
+if (PHOTOS.length < 2) {
+    $('controls').classList.add('single');
+    ['hotPrev', 'hotNext', 'hotPlay'].forEach(id => $(id).hidden = true);
+}
+placeScreen();
+buildGrid();
+show(0);
+cam.addEventListener('load', layout);
+cam.src = CONFIG.cameraSrc;
+if (cam.complete) layout();
+window.addEventListener('resize', layout);
+</script>
+</body>
+</html>
