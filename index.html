@@ -176,7 +176,7 @@
             </section> 
 
         <!--SECTION 5 GALLERY-->
-
+        <!-- REPLACING WITH NEW GALLERY
         <section id="slideshow" class="slideshow-section">
             <h2>Gallery</h2>
             <div class="banner">
@@ -193,8 +193,32 @@
                     <div class="item" style="--position: 10"><img src="Images/Gallery/laila-pool-small.webp" alt=""></div>
                 </div>
             </div>
+            -->
+        <!-- SECTION 5 GALLERY (camera slideshow) -->
+        <section id="gallery" class="camera-section">
+            <h2>Gallery</h2>
+            <div class="camera">
+                <img class="camera-body" src="Images/cameradiagramfaded.webp" alt="Back of my camera">
+                <div class="camera-screen" id="cameraScreen">
+                    <img class="slide active" src="Images/NewGallery/1.webp" alt="image1">
+                    <img class="slide" src="Images/NewGallery/2.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/3.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/4.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/5.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/6.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/7.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/8.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/9.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/10.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/11.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/12.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/13.webp" alt="image 1" loading="lazy">
+                    <img class="slide" src="Images/NewGallery/14.webp" alt="image 1" loading="lazy">
+                </div>
+            </div>
+
             <div class="view-all">
-                    <a href="newgallery.html">View All Designs</a>
+                <a href="gallery.html">View All Designs</a>
             </div>
         </section>
 
@@ -212,7 +236,7 @@
                     <label for="name">Name</label>
                     <input type="text" id="name">
 
-                    <label for="name">Email</label>
+                    <label for="email">Email</label>
                     <input type="email" id="email">
                     
                     <label for="message">Message</label>
@@ -233,6 +257,26 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script src="reactivepage.js"></script>
-</body>
+    <script>
+        // Camera screen slideshow
+        (function () {
+            const slides = document.querySelectorAll('#cameraScreen .slide');
+            if (slides.length < 2) return;
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduce) return;
+            let i = 0, timer = null;
+            const next = () => {
+                slides[i].classList.remove('active');
+                i = (i + 1) % slides.length;
+                slides[i].classList.add('active');
+            };
+            const start = () => { if (!timer) timer = setInterval(next, 3000); };
+            const stop = () => { clearInterval(timer); timer = null; };
+            // only run while the camera is on screen (saves battery on phones)
+            new IntersectionObserver(es => es[0].isIntersecting ? start() : stop(), { threshold: 0.2 })
+                .observe(document.querySelector('.camera'));
+        })();
+    </script>
 
+</body>
 </html>
