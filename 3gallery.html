@@ -149,6 +149,28 @@
             -webkit-user-drag: none;
         }
 
+        @media screen and (min-width: 700px) and (max-width: 1023px){
+            .page{ width: min(100%, 800px); }
+            .grid{ grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media screen and (min-width: 1024px){
+            .mainimage{object-position: center 40%;}
+            .mainimagecontainer{height: calc(100svh + var(--nudge));}
+            .page{width:min(100%, 1200px);}
+            .grid{grid-template-columns: repeat(4,1fr); gap: 16px;}
+        }
+
+        @media screen and (min-width:1460px) and (max-width:1799px){
+            .page{width:min(100%, 1400px);}
+            .grid{grid-template-columns: repeat(5,1fr);}
+        }
+        
+        @media screen and (min-width: 1800px){
+            .page{width:min(100%, 1700px);}
+            .grid{grid-template-columns: repeat(6,1fr);}
+        }
+
         .mainimage.is-fading{opacity: 0;}
 
         .hero-title {
@@ -172,6 +194,7 @@
         .hero-title h1 {
             margin: 0;
             font-family: 'PPEditorial', Georgia, serif;
+            text-shadow: 0 2px 18px rgba(0,0,0,.35);
             font-size: clamp(44px, 14vw, 64px);
             font-weight: 400;
             line-height: 1;
@@ -183,14 +206,12 @@
             calc(48px + env(safe-area-inset-bottom))
             calc(18px + env(safe-area-inset-left));
         }
-
-        
-
     </style>
+
 </head>
 <body>
     <div class="mainimagecontainer">
-        <img class="mainimage" src="Images/NewGallery/10.webp" alt="Image1">
+        <img class="mainimage" alt="Main Image">
         <a class="scrollcue" href="#allHeading">
         <span>SCROLL FOR MORE</span>
         <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
@@ -208,7 +229,7 @@
         
 
         <section aria-labelledby="allHeading">
-            <h2 id="allHeading">All Photos</h2>
+            <h2 id="allHeading">ALL PHOTOS</h2>
             <div class="grid" id="grid"></div>
         </section>
     </main>
@@ -231,23 +252,22 @@
     }, { passive: true });
 
     const PHOTOS = [
-        { src: 'Images/NewGallery/1.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/2.webp', title: '2', alt: '2' },
-        { src: 'Images/NewGallery/3.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/4.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/5.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/6.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/7.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/8.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/9.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/10.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/11.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/12.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/13.webp', title: '1', alt: '1' },
-        { src: 'Images/NewGallery/14.webp', title: '1', alt: '1' },
+        { src: 'Images/NewGallery/1.webp', title: '1', alt: '1',pos: 'center 35%' },
+        { src: 'Images/NewGallery/2.webp', title: '2', alt: '2',pos: 'center 27%' },
+        { src: 'Images/NewGallery/3.webp', title: '1', alt: '1',pos: 'center 27%' },
+        { src: 'Images/NewGallery/4.webp', title: '1', alt: '1',pos: 'center 53%' },
+        { src: 'Images/NewGallery/5.webp', title: '1', alt: '1',pos: 'center 25%' },
+        { src: 'Images/NewGallery/6.webp', title: '1', alt: '1',pos: 'center 30%' },
+        { src: 'Images/NewGallery/7.webp', title: '1', alt: '1',pos: 'center 25%' },
+        { src: 'Images/NewGallery/8.webp', title: '1', alt: '1',pos: 'center 15%' },
+        { src: 'Images/NewGallery/9.webp', title: '1', alt: '1', pos: 'center 5%' },
+        { src: 'Images/NewGallery/10.webp', title: '1', alt: '1',pos: 'center 40%' },
+        { src: 'Images/NewGallery/11.webp', title: '1', alt: '1',pos: 'center 27%' },
+        { src: 'Images/NewGallery/12.webp', title: '1', alt: '1',pos: 'center 15%' },
+        { src: 'Images/NewGallery/13.webp', title: '1', alt: '1',pos: 'center 50%' },
+        { src: 'Images/NewGallery/14.webp', title: '1', alt: '1',pos: 'center 40%' },
     ];
     const $ = id => document.getElementById(id);
-
 
     function show(i) {
         index = (i + PHOTOS.length) % PHOTOS.length;
@@ -265,6 +285,7 @@
             .then(() => {
                 if (mine !== req) return; // a newer swipe took over
                 photo.src = p.src;
+                photo.style.objectPosition = p.pos || '';
                 photo.alt = p.alt || p.title || '';
                 return photo.decode().catch(() =>{}); // Wait until it can paint
             })
@@ -300,6 +321,17 @@
     });
     }
     buildGrid();
+
+    function showInstant(i){
+        index = (i + PHOTOS.length) % PHOTOS.length;
+        const p = PHOTOS[index];
+        photo.src = p.src;
+        photo.style.objectPosition = p.pos || '';
+        photo.alt = p.alt || p.title || '';
+        document.querySelectorAll('.thumb').forEach((t,n) =>
+            t.setAttribute('aria-current', n === index));
+    }
+    showInstant(index);
 
     // SWIPE CONTROLS
     let sx = 0, sy = 0, tracking = false;
