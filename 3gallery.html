@@ -251,6 +251,34 @@
         if (window.scrollY < NUDGE) requestAnimationFrame(nudge);
     }, { passive: true });
 
+    const THUMBNAILS = [
+        {src: 'Images/NewGallery/1small.webp', title: '1small', alt: '1small'},
+        {src: 'Images/NewGallery/2small.webp', title: '2small', alt: '2small'},
+        {src: 'Images/NewGallery/3small.webp', title: '3small', alt: '3small'},
+        {src: 'Images/NewGallery/4small.webp', title: '4small', alt: '4small'},
+        {src: 'Images/NewGallery/5small.webp', title: '5small', alt: '5small'},
+        {src: 'Images/NewGallery/6small.webp', title: '6small', alt: '6small'},
+        {src: 'Images/NewGallery/7small.webp', title: '7small', alt: '7small'},
+        {src: 'Images/NewGallery/8small.webp', title: '8small', alt: '8small'},
+        {src: 'Images/NewGallery/9small.webp', title: '9small', alt: '9small'},
+        {src: 'Images/NewGallery/10small.webp', title: '10small', alt: '10small'},
+        {src: 'Images/NewGallery/11small.webp', title: '11small', alt: '11small'},
+        {src: 'Images/NewGallery/12small.webp', title: '12small', alt: '12small'},
+        {src: 'Images/NewGallery/13small.webp', title: '13small', alt: '13small'},
+        {src: 'Images/NewGallery/14small.webp', title: '14small', alt: '14small'},
+        {src: 'Images/NewGallery/15small.webp', title: '15small', alt: '15small'},
+        {src: 'Images/NewGallery/16small.webp', title: '16small', alt: '16small'},
+        {src: 'Images/NewGallery/17small.webp', title: '17small', alt: '17small'},
+        {src: 'Images/NewGallery/18small.webp', title: '18small', alt: '18small'},
+        {src: 'Images/NewGallery/19small.webp', title: '19small', alt: '19small'},
+        {src: 'Images/NewGallery/20small.webp', title: '20small', alt: '20small'},
+        {src: 'Images/NewGallery/21small.webp', title: '21small', alt: '21small'},
+        {src: 'Images/NewGallery/22small.webp', title: '22small', alt: '22small'},
+        {src: 'Images/NewGallery/23small.webp', title: '23small', alt: '23small'},
+        {src: 'Images/NewGallery/24small.webp', title: '24small', alt: '24small'},
+        {src: 'Images/NewGallery/25small.webp', title: '25small', alt: '25small'},
+    ];
+        
     const PHOTOS = [
         { src: 'Images/NewGallery/1.webp', title: '1', alt: '1',pos: 'center 35%' },
         { src: 'Images/NewGallery/2.webp', title: '2', alt: '2',pos: 'center 27%' },
@@ -274,6 +302,9 @@
         { src: 'Images/NewGallery/20.webp', title: '20', alt: '20',pos: 'center 40%' },
         { src: 'Images/NewGallery/21.webp', title: '21', alt: '21',pos: 'center 25%' },
         { src: 'Images/NewGallery/22.webp', title: '22', alt: '22',pos: 'center 35%' },
+        { src: 'Images/NewGallery/23.webp', title: '23', alt: '23',pos: 'center 35%' },
+        { src: 'Images/NewGallery/24.webp', title: '24', alt: '24',pos: 'center 55%' },
+        { src: 'Images/NewGallery/25.webp', title: '25', alt: '25',pos: 'center 40%' },
     ];
     const $ = id => document.getElementById(id);
 
@@ -313,7 +344,7 @@
     const go = d => show(index + d);
 
     function buildGrid() {
-    PHOTOS.forEach((p, n) => {
+    THUMBNAILS.forEach((p, n) => {
         const b = document.createElement('button');
         b.className = 'thumb';
         b.setAttribute('aria-label', `Show ${p.title || 'photo ' + (n + 1)} on the camera`);
