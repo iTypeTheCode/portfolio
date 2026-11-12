@@ -326,10 +326,6 @@
                 photo.src = p.src;
                 photo.style.objectPosition = p.pos || '';
                 photo.alt = p.alt || p.title || '';
-                return photo.decode().catch(() =>{}); // Wait until it can paint
-            })
-            .then(() => {
-                if(mine !== req) return;
                 stage.classList.remove('is-fading');
                 photo.classList.remove('is-fading');
             });
@@ -337,7 +333,7 @@
         document.querySelectorAll('.thumb').forEach((t,n) =>
             t.setAttribute('aria-current', n === index));
         // Preload neighboring images so the next swipe is instant.
-        [index - 1, index + 1].forEach(n => {
+        [index + 1].forEach(n => {
             new Image().src = PHOTOS[(n + PHOTOS.length) % PHOTOS.length].src;
         })
     }
